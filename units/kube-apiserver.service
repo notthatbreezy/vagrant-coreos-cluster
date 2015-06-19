@@ -1,0 +1,28 @@
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+Requires=etcd2.service
+After=etcd2.service
+
+[Service]
+ExecStartPre=-/usr/bin/docker kill kube-apiserver
+ExecStartPre=-/usr/bin/docker rm kube-apiserver
+ExecStart=/usr/bin/docker run --net=host --name=kube-apiserver \
+--volume=/etc/kubernetes:/etc/kubernetes \
+--volume=/usr/share/ca-certificates:/etc/ssl/certs \
+--volume=/var/run/kubernetes:/var/run/kubernetes \
+quay.io/kelseyhightower/kube-apiserver:0.19.0 \
+--etcd-servers=http://127.0.0.1:2379 \
+--insecure-bind-address=0.0.0.0 \
+--insecure-port=8080 \
+--logtostderr=true \
+--service-cluster-ip-range=10.200.20.0/24 \
+--v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata=role=leader

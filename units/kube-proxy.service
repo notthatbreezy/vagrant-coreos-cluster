@@ -1,0 +1,26 @@
+[Unit]
+Description=Kubernetes Proxy
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+Requires=docker.service
+After=docker.service
+
+[Service]
+ExecStartPre=-/usr/bin/docker kill kube-proxy
+ExecStartPre=-/usr/bin/docker rm kube-proxy
+ExecStart=/usr/bin/docker run --net=host --name=kube-proxy --privileged \
+--volume=/etc/kubernetes:/etc/kubernetes \
+--volume=/usr/share/ca-certificates:/etc/ssl/certs \
+--volume=/usr:/usr \
+--volume=/lib64:/lib64 \
+quay.io/kelseyhightower/kube-proxy:0.19.0 \
+--logtostderr=true \
+--master=http://172.17.8.101:8080 \
+--v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true

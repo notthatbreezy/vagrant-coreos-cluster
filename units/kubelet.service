@@ -1,0 +1,37 @@
+[Unit]
+Description=Kubernetes Kubelet
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+Requires=docker.service
+After=docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+ExecStartPre=-/usr/bin/docker kill kubelet
+ExecStartPre=-/usr/bin/docker rm kubelet
+ExecStart=/usr/bin/docker run --net=host --name=kubelet --privileged \
+--volume=/usr/bin/nsenter:/nsenter \
+--volume=/usr:/usr \
+--volume=/lib64:/lib64 \
+--volume=/:/rootfs:ro \
+--volume=/etc/kubernetes:/etc/kubernetes \
+--volume=/etc/os-release:/etc/os-release \
+--volume=/usr/share/ca-certificates/:/etc/ssl/certs \
+--volume=/sys:/sys:ro \
+--volume=/var/lib/docker/:/var/lib/docker:ro \
+--volume=/var/lib/kubelet/:/var/lib/kubelet:rw \
+--volume=/var/run:/var/run:rw \
+quay.io/kelseyhightower/kubelet:0.19.0 \
+--address=${COREOS_PRIVATE_IPV4} \
+--api-servers=http://172.17.8.101:8080 \
+--enable-server \
+--hostname-override=${COREOS_PRIVATE_IPV4} \
+--machine-id-file=/rootfs/etc/machine-id \
+--v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true

@@ -1,0 +1,24 @@
+[Unit]
+Description=Kubernetes Controller Manager
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+Requires=kube-apiserver.service
+After=kube-apiserver.service
+
+[Service]
+ExecStartPre=-/usr/bin/docker kill kube-controller
+ExecStartPre=-/usr/bin/docker rm kube-controller
+ExecStart=/usr/bin/docker run --net=host --name=kube-controller-manager \
+--volume=/etc/kubernetes:/etc/kubernetes \
+--volume=/usr/share/ca-certificates:/etc/ssl/certs \
+quay.io/kelseyhightower/kube-controller-manager:0.19.0 \
+--logtostderr=true \
+--master=http://127.0.0.1:8080 \
+--v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata=role=leader
