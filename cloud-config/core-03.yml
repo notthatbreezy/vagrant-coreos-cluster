@@ -1,5 +1,7 @@
 #cloud-config
 
+manage_etc_hosts: localhost
+
 coreos:
   etcd2:
     name: core-03
