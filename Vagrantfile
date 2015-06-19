@@ -4,8 +4,8 @@
 Vagrant.require_version ">= 1.6"
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "coreos-beta"
-  config.vm.box_url = "http://beta.release.core-os.net/amd64-usr/current/coreos_production_vagrant.json"
+  config.vm.box = "coreos-alpha"
+  config.vm.box_url = "http://alpha.release.core-os.net/amd64-usr/current/coreos_production_vagrant.json"
 
   config.vm.provider "virtualbox" do |v|
     v.check_guest_additions = false
